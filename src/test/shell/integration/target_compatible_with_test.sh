@@ -951,4 +951,20 @@ function test_aquery_incompatible_target() {
   expect_log "target platform didn't satisfy constraint //target_skipping:foo1"
 }
 
+function test_aaaaaaa() {
+  cat >> target_skipping/BUILD <<EOF
+objc_library(
+    name = "objc",
+    target_compatible_with = [
+        "//target_skipping:foo1",
+    ],
+)
+EOF
+
+  cd target_skipping || fail "couldn't cd into workspace"
+
+  bazel build //target_skipping/... &> "${TEST_log}" \
+    || fail "Bazel build failed unexpectedly."
+}
+
 run_suite "target_compatible_with tests"

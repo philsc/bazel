@@ -135,6 +135,7 @@ public class CcToolchainSuite implements RuleConfiguredTargetFactory {
         String.format(
             "cc_toolchain_suite '%s' does not contain a toolchain for cpu '%s'",
             ruleContext.getLabel(), cpu);
+    new Error().printStackTrace();
     if (compiler != null) {
       errorMessage = errorMessage + " and compiler '" + compiler + "'.";
     }

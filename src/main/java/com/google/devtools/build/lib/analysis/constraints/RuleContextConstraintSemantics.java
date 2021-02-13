@@ -922,6 +922,8 @@ public class RuleContextConstraintSemantics implements ConstraintSemantics<RuleC
       }
     }
 
+    System.err.println("Looking at " + ruleContext.getRule().getLabel().toString());
+
     // This is incompatible if one of the dependencies is as well.
     ImmutableList<ConfiguredTarget> incompatibleDependencies =
         prerequisiteMap.values().stream()
