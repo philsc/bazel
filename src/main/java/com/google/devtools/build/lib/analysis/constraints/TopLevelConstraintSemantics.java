@@ -129,6 +129,11 @@ public class TopLevelConstraintSemantics {
     ImmutableSet.Builder<ConfiguredTarget> incompatibleTargets = ImmutableSet.builder();
     ImmutableSet.Builder<ConfiguredTarget> incompatibleButRequestedTargets = ImmutableSet.builder();
 
+    System.out.println("######");
+    for (String pattern : explicitTargetPatterns) {
+        System.out.println(" - command line target pattern: " + pattern);
+    }
+
     for (ConfiguredTarget target : topLevelTargets) {
       RuleContextConstraintSemantics.IncompatibleCheckResult result =
           RuleContextConstraintSemantics.checkForIncompatibility(target);
@@ -142,6 +147,7 @@ public class TopLevelConstraintSemantics {
       // main repository. explicitTargetPatterns is also already in the unambiguous form to make
       // comparison succeed regardless of the provided form.
       String labelString = target.getLabel().getUnambiguousCanonicalForm();
+      System.out.println("#######\n labelString: " + labelString + "\n###########");
       if (explicitTargetPatterns.contains(labelString)) {
         if (!keepGoing) {
           // Use the slightly simpler form for printing error messages. I.e. no "@" prefix for

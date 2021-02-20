@@ -320,6 +320,7 @@ public final class AnalysisPhaseRunner {
     TargetPattern.Parser parser = new TargetPattern.Parser(env.getRelativeWorkingDirectory());
 
     for (String requestedTargetPattern : requestedTargetPatterns) {
+      System.out.println(">>>> requestedTargetPattern: " + requestedTargetPattern);
       if (requestedTargetPattern.startsWith("-")) {
         // Excluded patterns are by definition not explicitly requested so we can move on to the
         // next target pattern.
@@ -339,8 +340,11 @@ public final class AnalysisPhaseRunner {
             e);
       }
 
+      System.out.println(">>>>   + type: " + parsedPattern.getType().toString());
       if (parsedPattern.getType() == TargetPattern.Type.SINGLE_TARGET) {
         explicitTargetPatterns.add(parsedPattern.getSingleTargetPath());
+      } else if (parsedPattern.getType() == TargetPattern.Type.PATH_AS_TARGET) {
+        System.out.println(">>>>   + path: " + parsedPattern.getPathForPathAsTarget());
       }
     }
 

@@ -245,6 +245,7 @@ final class SkyframeTargetPatternEvaluator implements TargetPatternPreloader {
         WalkableGraph walkableGraph,
         boolean keepGoing)
         throws InterruptedException, TargetParsingException {
+      new Error().printStackTrace();
       Package pkg = ((PackageValue) value).getPackage();
       RecursivePackageProviderBackedTargetPatternResolver resolver =
           new RecursivePackageProviderBackedTargetPatternResolver(
