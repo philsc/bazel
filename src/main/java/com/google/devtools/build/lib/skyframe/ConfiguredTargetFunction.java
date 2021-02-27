@@ -270,6 +270,12 @@ public final class ConfiguredTargetFunction implements SkyFunction {
     //  would exit this SkyFunction and restart it when permits were available.
     acquireWithLogging(key);
     try {
+      //Map<ConfiguredTargetKey, PlatformInfo> platformInfo = PlatformLookupUtil.getPlatformInfo(
+      //    ImmutableList.<ConfiguredTargetKey>of(configuredTargetKey),
+      //    env,
+      //    true);
+      System.out.println(" A >> " + target.toString());
+
       // Determine what toolchains are needed by this target.
       unloadedToolchainContexts =
           computeUnloadedToolchainContexts(
@@ -281,6 +287,7 @@ public final class ConfiguredTargetFunction implements SkyFunction {
       if (env.valuesMissing()) {
         return null;
       }
+      System.out.println(" E >> " + target.toString());
 
       // Get the configuration targets that trigger this rule's configurable attributes.
       ConfigConditions configConditions =
@@ -295,6 +302,7 @@ public final class ConfiguredTargetFunction implements SkyFunction {
       if (env.valuesMissing()) {
         return null;
       }
+      System.out.println(" D >> " + target.toString());
       // TODO(ulfjack): ConfiguredAttributeMapper (indirectly used from computeDependencies) isn't
       // safe to use if there are missing config conditions, so we stop here, but only if there are
       // config conditions - though note that we can't check if configConditions is non-empty - it
@@ -311,6 +319,12 @@ public final class ConfiguredTargetFunction implements SkyFunction {
                 configuration,
                 causes,
                 getPrioritizedDetailedExitCode(causes)));
+      }
+      System.out.println(" C >> '" + target.toString() + "'");
+
+      // TODO(phil): Insert logic here.
+      if (unloadedToolchainContexts != null) {
+        PlatformInfo platformInfo = unloadedToolchainContexts.getTargetPlatform();
       }
 
       // Calculate the dependencies of this target.
@@ -330,16 +344,29 @@ public final class ConfiguredTargetFunction implements SkyFunction {
               transitivePackagesForPackageRootResolution,
               transitiveRootCauses,
               defaultBuildOptions);
+      if (target.toString() == "objc_library rule //target_skipping:objc") {
+        String foo = "_______________________\n";
+        for (ConfiguredTargetAndData dep : depValueMap.values()) {
+          foo += " + " + dep.getConfiguredTarget().toString();
+        }
+        foo += "_______________________\n";
+        System.out.println(foo);
+      }
+
+
       if (!transitiveRootCauses.isEmpty()) {
         NestedSet<Cause> causes = transitiveRootCauses.build();
         throw new ConfiguredTargetFunctionException(
             new ConfiguredValueCreationException(
                 "Analysis failed", configuration, causes, getPrioritizedDetailedExitCode(causes)));
       }
+      System.out.println(" F >> " + target.toString());
       if (env.valuesMissing()) {
+        System.out.println("++++++++++++++++++++++ " + target.toString());
         return null;
       }
       Preconditions.checkNotNull(depValueMap);
+      System.out.println(" G >> " + target.toString());
 
       // Load the requested toolchains into the ToolchainContext, now that we have dependencies.
       ToolchainCollection<ResolvedToolchainContext> toolchainContexts = null;
@@ -361,6 +388,7 @@ public final class ConfiguredTargetFunction implements SkyFunction {
         }
         toolchainContexts = contextsBuilder.build();
       }
+      System.out.println(" B >> " + target.toString());
 
       ConfiguredTargetValue ans =
           createConfiguredTarget(
