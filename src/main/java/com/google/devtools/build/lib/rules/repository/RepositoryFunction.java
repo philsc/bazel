@@ -323,7 +323,11 @@ public abstract class RepositoryFunction {
 
     // Returns true if there is a null value and we need to wait for some dependencies.
     if (environ == null) {
+      System.out.println("  (null environ)");
       return null;
+    }
+    for (Map.Entry<String, String> value : environ.entrySet()) {
+      System.out.println("  declared " + value.getKey() + "=" + value.getValue());
     }
 
     Map<String, String> repoEnvOverride = PrecomputedValue.REPO_ENV.get(env);
@@ -332,9 +336,15 @@ public abstract class RepositoryFunction {
     }
 
     Map<String, String> repoEnv = new LinkedHashMap<String, String>(environ);
-    for (Map.Entry<String, String> value : repoEnvOverride.entrySet()) {
-      repoEnv.put(value.getKey(), value.getValue());
+    for (String key : keys) {
+      String value = repoEnvOverride.get(key);
+      if (value != null) {
+        repoEnv.put(key, value);
+      }
     }
+    //for (Map.Entry<String, String> value : repoEnvOverride.entrySet()) {
+    //  repoEnv.put(value.getKey(), value.getValue());
+    //}
 
     // Add the dependencies to the marker file
     for (Map.Entry<String, String> value : repoEnv.entrySet()) {
@@ -352,20 +362,30 @@ public abstract class RepositoryFunction {
    */
   protected boolean verifyEnvironMarkerData(Map<String, String> markerData, Environment env,
       Iterable<String> keys) throws InterruptedException {
+    System.out.println(">> 0");
     Map<String, String> environ = ActionEnvironmentFunction.getEnvironmentView(env, keys);
     if (env.valuesMissing()) {
       return false; // Returns false so caller knows to return immediately
     }
 
+    System.out.println(">> 1");
     Map<String, String> repoEnvOverride = PrecomputedValue.REPO_ENV.get(env);
     if (repoEnvOverride == null) {
       return false;
     }
+    System.out.println(">> 2");
 
     Map<String, String> repoEnv = new LinkedHashMap<>(environ);
-    for (Map.Entry<String, String> value : repoEnvOverride.entrySet()) {
-      repoEnv.put(value.getKey(), value.getValue());
+    for (String key : keys) {
+      String value = repoEnvOverride.get(key);
+      if (value != null) {
+        repoEnv.put(key, value);
+      }
     }
+    //for (Map.Entry<String, String> value : repoEnvOverride.entrySet()) {
+    //  repoEnv.put(value.getKey(), value.getValue());
+    //}
+    System.out.println(">> 3");
 
     // Verify that all environment variable in the marker file are also in keys
     for (String key : markerData.keySet()) {
@@ -373,8 +393,10 @@ public abstract class RepositoryFunction {
         return false;
       }
     }
+    System.out.println(">> 4");
     // Now verify the values of the marker data
     for (Map.Entry<String, String> value : repoEnv.entrySet()) {
+      System.out.println(" - " + value.getKey() + "=" +  value.getValue());
       if (!markerData.containsKey("ENV:" + value.getKey())) {
         return false;
       }
@@ -383,6 +405,7 @@ public abstract class RepositoryFunction {
         return false;
       }
     }
+    System.out.println(">> 5");
     return true;
   }
 

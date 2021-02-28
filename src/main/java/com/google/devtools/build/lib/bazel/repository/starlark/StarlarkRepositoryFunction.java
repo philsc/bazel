@@ -111,8 +111,19 @@ public class StarlarkRepositoryFunction extends RepositoryFunction {
     env.getListener().post(new StarlarkRepositoryDefinitionLocationEvent(rule.getName(), defInfo));
 
     StarlarkCallable function = rule.getRuleClassObject().getConfiguredTargetFunction();
+    System.out.println(rule.toString());
+    for (String markerKey : markerData.keySet()) {
+      System.out.println(" markerData[" + markerKey + "] = " + markerData.get(markerKey));
+    }
+    for (String entry : getEnviron(rule)) {
+      System.out.println(" (ENV) " + entry);
+    }
     if (declareEnvironmentDependencies(markerData, env, getEnviron(rule)) == null) {
       return null;
+    }
+    System.out.println("-----");
+    for (String markerKey : markerData.keySet()) {
+      System.out.println(" markerData[" + markerKey + "] = " + markerData.get(markerKey));
     }
     StarlarkSemantics starlarkSemantics = PrecomputedValue.STARLARK_SEMANTICS.get(env);
     if (env.valuesMissing()) {

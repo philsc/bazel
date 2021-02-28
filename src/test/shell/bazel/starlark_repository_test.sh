@@ -926,6 +926,49 @@ EOF
       || fail "Expected unrelated action to not be rerun"
 }
 
+function test_repo_env_2() {
+  setup_starlark_repository
+
+  cat > test.bzl <<'EOF'
+def _impl(ctx):
+  # Record a time stamp to verify that the rule is not rerun.
+  ctx.execute(["bash", "-c", "echo FOO=$FOO > env.txt"])
+  ctx.execute(["bash", "-c", "date +%s >> env.txt"])
+  ctx.file("BUILD", 'exports_files(["env.txt"])')
+
+repo = repository_rule(
+  implementation = _impl,
+  #environ = ["FOO"],
+)
+EOF
+  cat > BUILD <<'EOF'
+genrule(
+  name = "repoenv",
+  outs = ["repoenv.txt"],
+  srcs = ["@foo//:env.txt"],
+  cmd = "cp $< $@",
+)
+EOF
+  cat > .bazelrc <<EOF
+build:foo --repo_env=FOO=foo
+build:bar --repo_env=FOO=bar
+EOF
+
+  bazel build --config=foo //:repoenv 2>/dev/null
+  cp `bazel info bazel-genfiles 2>/dev/null`/repoenv.txt repoenv1.txt
+  echo; cat repoenv1.txt; echo;
+
+  sleep 2 # ensure any rerun will have a different time stamp
+
+  bazel build --config=bar //:repoenv 2>/dev/null
+  # The new config should not trigger a rerun of repoenv.
+  cp `bazel info bazel-genfiles 2>/dev/null`/repoenv.txt repoenv2.txt
+  echo; cat repoenv2.txt; echo;
+
+  diff repoenv1.txt repoenv2.txt \
+      || fail "Expected repository to not change"
+}
+
 function test_repo_env_invalidation() {
     # regression test for https://github.com/bazelbuild/bazel/issues/8869
     WRKDIR=$(mktemp -d "${TEST_TMPDIR}/testXXXXXX")

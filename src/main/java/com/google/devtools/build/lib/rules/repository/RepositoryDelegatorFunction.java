@@ -188,6 +188,7 @@ public final class RepositoryDelegatorFunction implements SkyFunction {
   @Override
   public SkyValue compute(SkyKey skyKey, Environment env)
       throws InterruptedException, RepositoryFunctionException {
+    new Error().printStackTrace();
     RepositoryName repositoryName = (RepositoryName) skyKey.argument();
 
     Map<RepositoryName, PathFragment> overrides = REPOSITORY_OVERRIDES.get(env);
@@ -500,6 +501,7 @@ public final class RepositoryDelegatorFunction implements SkyFunction {
      */
     byte[] areRepositoryAndMarkerFileConsistent(RepositoryFunction handler, Environment env)
         throws RepositoryFunctionException, InterruptedException {
+      System.out.println(">>>> got to areRepositoryAndMarkerFileConsistent");
       if (!markerPath.exists()) {
         return null;
       }
