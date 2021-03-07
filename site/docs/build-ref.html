@@ -291,7 +291,7 @@ app_binary
   The precise details of allowed target names are below.
 </p>
 
-<h4 id="name">Target names, <code>//...:<b>target-name</b></code></h4>
+<h4 id="name">Target names, <code>//xxx:<b>target-name</b></code></h4>
 
 <p><code>target-name</code> is the name of the target within the package.
   The name of a rule is the value of the <code>name</code>
@@ -329,7 +329,7 @@ app_binary
   certain rules must match their principal source file, which may
   reside in a subdirectory of the package.</p>
 
-<h4>Package names, <code>//<b>package-name</b>:...</code></h4>
+<h4>Package names, <code>//<b>package-name</b>:xxx</code></h4>
 <p>
   The name of a package is the name of the directory containing its
 
@@ -355,6 +355,29 @@ app_binary
 <p>
   Package names may not contain the substring <code>//</code>, nor
   end with a slash.
+</p>
+
+<h4 id="pattern_expansion">Target pattern expansions, <code>//<b>...</b></code>
+  and <code>//<b>:all</b></code></h4>
+<p>
+  The two <code>...</code>and <code>:all</code> notations are special when used
+  on the command line. These target patterns are expanded by bazel before the
+  build is started.
+</p>
+<p>
+  Adding <code>...</code> after a package tells bazel that you're interested in
+  all targets of all packages below the specified directory. For example
+  <code>//...</code> means "all targets in all packages in the source tree".
+  On the other hand <code>//foo/bar/...</code> means "all targets in all
+  packages in the <code>//foo/bar</code> package and all packages underneath
+  the <code>//foo/bar</code> package.
+</p>
+<p>
+  Adding <code>:all</code> after a package tells bazel that you're interested
+  in all targets within that package. For example <code>//:all</code> means
+  "all targets in the top-level package". On the other hand
+  <code>//foo/bar:all</code> means "all targets in the <code>//foo/bar</code>
+  package.
 </p>
 
 <h3 id="rules">Rules</h3>
