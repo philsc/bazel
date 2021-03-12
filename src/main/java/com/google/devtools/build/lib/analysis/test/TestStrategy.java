@@ -346,6 +346,7 @@ public abstract class TestStrategy implements TestActionContext {
               .handle(Event.error(testName + ": " + testResultData.getStatusDetails()));
         }
         if (testResultData.getStatus() == BlazeTestStatus.TIMEOUT) {
+          new Error().printStackTrace();
           actionExecutionContext
               .getEventHandler()
               .handle(Event.of(EventKind.TIMEOUT, null, testName + " (see " + testLog + ")"));

@@ -1158,6 +1158,7 @@ public class TestRunnerAction extends AbstractAction
         }
 
         TestAttemptResult result = nextContinuation.get();
+        System.out.println(testContinuation.getClass().toString());
         int actualMaxAttempts =
             failedAttempts.isEmpty() ? testRunnerSpawn.getMaxAttempts(result) : maxAttempts;
         Preconditions.checkState(actualMaxAttempts != 0);

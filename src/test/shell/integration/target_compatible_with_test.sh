@@ -303,8 +303,23 @@ EOF
 # --keep_going. In other words, even if there's an error in the target skipping
 # (e.g. because the user explicitly requested an incompatible target) we still
 # want Bazel to finish the rest of the build when --keep_going is specified.
-function test_failure_on_incompatible_top_level_target() {
+function test_aaaaa() {
+  cat > target_skipping/timeout_test.sh <<EOF
+sleep 100
+EOF
+  chmod +x target_skipping/timeout_test.sh
+
+  cat >> target_skipping/BUILD <<EOF
+sh_test(
+    name = "timeout_test",
+    srcs = ["timeout_test.sh"],
+    size = "small",
+)
+EOF
   cd target_skipping || fail "couldn't cd into workspace"
+
+  bazel test --test_timeout=1 //target_skipping:timeout_test
+  exit 1
 
   # Validate a variety of ways to refer to the same target.
   local -r -a incompatible_targets=(
